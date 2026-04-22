@@ -1,5 +1,5 @@
 find_path(LibRoyale_ROOT royale_license.txt 
-	PATHS ${LibRoyale_ROOT} "C:/Program Files/royale/2.3.0.92" "/usr/local")
+	HINTS ${LibRoyale_ROOT})
 
 find_library(LibRoyale_LIBRARY
 	NAMES royale

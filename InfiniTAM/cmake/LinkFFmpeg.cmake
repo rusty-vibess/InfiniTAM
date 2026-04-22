@@ -3,7 +3,11 @@
 ####################
 
 IF(WITH_FFMPEG)
-  TARGET_LINK_LIBRARIES(${targetname} ${FFMPEG_LIBRARIES})
+  IF(TARGET InfiniTAMDependency::FFmpeg)
+    TARGET_LINK_LIBRARIES(${targetname} InfiniTAMDependency::FFmpeg)
+  ELSE()
+    TARGET_LINK_LIBRARIES(${targetname} ${FFMPEG_LIBRARIES})
+  ENDIF()
 
   IF(MSVC_IDE)
     ADD_CUSTOM_COMMAND(TARGET ${targetname} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FFmpeg_SHARED_ROOT}/bin/avcodec-57.dll" "$<TARGET_FILE_DIR:${targetname}>")

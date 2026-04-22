@@ -1,0 +1,126 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+include("${CMAKE_CURRENT_LIST_DIR}/InfiniTAMOptions.cmake")
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
+
+function(_infinitam_add_imported_dependency target_name)
+  set(options)
+  set(one_value_args)
+  set(multi_value_args INCLUDES LIBRARIES DEFINITIONS)
+  cmake_parse_arguments(ARG "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+
+  if(NOT TARGET ${target_name})
+    add_library(${target_name} INTERFACE IMPORTED)
+  endif()
+
+  if(ARG_INCLUDES)
+    set_property(TARGET ${target_name} APPEND PROPERTY
+      INTERFACE_INCLUDE_DIRECTORIES "${ARG_INCLUDES}"
+    )
+  endif()
+
+  if(ARG_LIBRARIES)
+    set_property(TARGET ${target_name} APPEND PROPERTY
+      INTERFACE_LINK_LIBRARIES "${ARG_LIBRARIES}"
+    )
+  endif()
+
+  if(ARG_DEFINITIONS)
+    set_property(TARGET ${target_name} APPEND PROPERTY
+      INTERFACE_COMPILE_DEFINITIONS "${ARG_DEFINITIONS}"
+    )
+  endif()
+endfunction()
+
+if(InfiniTAM_WITH_CUDA)
+  if(POLICY CMP0146)
+    cmake_policy(PUSH)
+    cmake_policy(SET CMP0146 OLD)
+  endif()
+  find_dependency(CUDA)
+  if(POLICY CMP0146)
+    cmake_policy(POP)
+  endif()
+endif()
+
+if(InfiniTAM_WITH_OPENMP)
+  find_dependency(OpenMP)
+endif()
+
+if(InfiniTAM_WITH_PNG)
+  find_dependency(PNG)
+endif()
+
+if(InfiniTAM_WITH_FFMPEG)
+  find_dependency(FFmpeg)
+  _infinitam_add_imported_dependency(InfiniTAMDependency::FFmpeg
+    INCLUDES "${FFMPEG_INCLUDE_DIR}"
+    LIBRARIES "${FFMPEG_LIBRARIES}"
+    DEFINITIONS COMPILE_WITH_FFMPEG
+  )
+endif()
+
+if(InfiniTAM_WITH_OPENNI)
+  find_dependency(OpenNI)
+  if(OPENNI_LIBRARY)
+    set(_InfiniTAM_OpenNI_LIBRARY "${OPENNI_LIBRARY}")
+    set(_InfiniTAM_OpenNI_INCLUDE_DIR "${OPENNI_INCLUDE_DIR}")
+  else()
+    set(_InfiniTAM_OpenNI_LIBRARY "${OpenNI_LIBRARY}")
+    set(_InfiniTAM_OpenNI_INCLUDE_DIR "${OpenNI_INCLUDE_DIR}")
+  endif()
+  _infinitam_add_imported_dependency(InfiniTAMDependency::OpenNI
+    INCLUDES "${_InfiniTAM_OpenNI_INCLUDE_DIR}"
+    LIBRARIES "${_InfiniTAM_OpenNI_LIBRARY}"
+  )
+endif()
+
+if(InfiniTAM_WITH_REALSENSE)
+  find_dependency(RealSense)
+  _infinitam_add_imported_dependency(InfiniTAMDependency::RealSense
+    INCLUDES "${RealSense_INCLUDE_DIR}"
+    LIBRARIES "${RealSense_LIBRARY}"
+    DEFINITIONS COMPILE_WITH_RealSense
+  )
+endif()
+
+if(InfiniTAM_WITH_REALSENSE2)
+  find_dependency(RealSense2)
+  _infinitam_add_imported_dependency(InfiniTAMDependency::RealSense2
+    INCLUDES "${RealSense2_INCLUDE_DIR}"
+    LIBRARIES "${RealSense2_LIBRARY}"
+    DEFINITIONS COMPILE_WITH_RealSense2
+  )
+endif()
+
+if(InfiniTAM_WITH_UVC)
+  find_dependency(libuvc)
+  _infinitam_add_imported_dependency(InfiniTAMDependency::libuvc
+    INCLUDES "${libuvc_INCLUDE_DIRS}"
+    LIBRARIES "${libuvc_LIBRARIES}"
+    DEFINITIONS COMPILE_WITH_LibUVC
+  )
+endif()
+
+if(InfiniTAM_WITH_LIBROYALE)
+  find_dependency(LibRoyale)
+  _infinitam_add_imported_dependency(InfiniTAMDependency::LibRoyale
+    INCLUDES "${LibRoyale_INCLUDE_DIR}"
+    LIBRARIES "${LibRoyale_LIBRARY}"
+    DEFINITIONS COMPILE_WITH_LibRoyale
+  )
+endif()
+
+if(InfiniTAM_WITH_CSPARSE)
+  find_dependency(CSparse)
+  _infinitam_add_imported_dependency(InfiniTAMDependency::CSparse
+    INCLUDES "${CSparse_INCLUDE_DIR}"
+    LIBRARIES "${CSparse_LIBRARIES}"
+    DEFINITIONS COMPILE_WITH_CSPARSE
+  )
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/InfiniTAMTargets.cmake")
+check_required_components(InfiniTAM)

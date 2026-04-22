@@ -14,7 +14,12 @@ SET(targetname MiniSlamGraphLib)
 
 # FIXME: Remove.
 IF(WITH_CSPARSE)
-  include_directories(${CSPARSE_INCLUDE_DIRS})
+  FIND_PACKAGE(CSparse REQUIRED)
+  infinitam_add_imported_dependency(InfiniTAMDependency::CSparse
+    INCLUDES "${CSparse_INCLUDE_DIR}"
+    LIBRARIES "${CSparse_LIBRARIES}"
+    DEFINITIONS COMPILE_WITH_CSPARSE
+  )
   add_definitions(-DCOMPILE_WITH_CSPARSE)
 ENDIF()
 
@@ -64,4 +69,7 @@ SOURCE_GROUP("" FILES ${sources} ${headers})
 INCLUDE(${PROJECT_SOURCE_DIR}/cmake/SetLibTarget.cmake)
 
 # FIXME: Remove.
-target_link_libraries(${targetname} ORUtils ${CSparse_LIBRARIES})
+target_link_libraries(${targetname} PUBLIC ORUtils)
+IF(WITH_CSPARSE)
+  target_link_libraries(${targetname} PUBLIC InfiniTAMDependency::CSparse)
+ENDIF()
