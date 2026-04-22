@@ -17,10 +17,10 @@ include(CMakePackageConfigHelpers)
 # Specify the CMake module path #
 #################################
 
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
-include(${CMAKE_SOURCE_DIR}/cmake/InfiniTAMDependencies.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/InfiniTAMInstallHelpers.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/InfiniTAMDependencies.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/InfiniTAMInstallHelpers.cmake)
 
 OPTION(INFINITAM_INSTALL_PACKAGE "Install InfiniTAM libraries, headers and CMake package files?" ON)
 OPTION(INFINITAM_INSTALL_APPS "Install the InfiniTAM sample applications?" ON)
@@ -90,31 +90,31 @@ if(INFINITAM_INSTALL_PACKAGE)
   )
 
   configure_package_config_file(
-    ${CMAKE_SOURCE_DIR}/cmake/InfiniTAMConfig.cmake.in
-    ${CMAKE_BINARY_DIR}/InfiniTAMConfig.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/InfiniTAMConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/InfiniTAMConfig.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/InfiniTAM
   )
 
   write_basic_package_version_file(
-    ${CMAKE_BINARY_DIR}/InfiniTAMConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/InfiniTAMConfigVersion.cmake
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMajorVersion
   )
 
   configure_file(
-    ${CMAKE_SOURCE_DIR}/cmake/InfiniTAMOptions.cmake.in
-    ${CMAKE_BINARY_DIR}/InfiniTAMOptions.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/InfiniTAMOptions.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/InfiniTAMOptions.cmake
     @ONLY
   )
 
   install(FILES
-    ${CMAKE_BINARY_DIR}/InfiniTAMConfig.cmake
-    ${CMAKE_BINARY_DIR}/InfiniTAMConfigVersion.cmake
-    ${CMAKE_BINARY_DIR}/InfiniTAMOptions.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/InfiniTAMConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/InfiniTAMConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/InfiniTAMOptions.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/InfiniTAM
   )
 
-  install(DIRECTORY ${CMAKE_SOURCE_DIR}/cmake/
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/InfiniTAM/modules
     FILES_MATCHING PATTERN "Find*.cmake"
   )
