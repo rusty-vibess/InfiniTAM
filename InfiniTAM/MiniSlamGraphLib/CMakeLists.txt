@@ -69,7 +69,7 @@ SOURCE_GROUP("" FILES ${sources} ${headers})
 INCLUDE(${PROJECT_SOURCE_DIR}/cmake/SetLibTarget.cmake)
 
 # FIXME: Remove.
-target_link_libraries(${targetname} PUBLIC ORUtils)
+target_link_libraries(${targetname} ORUtils)
 IF(WITH_CSPARSE)
-  target_link_libraries(${targetname} PUBLIC InfiniTAMDependency::CSparse)
+  target_link_libraries(${targetname} InfiniTAMDependency::CSparse)
 ENDIF()
