@@ -12,6 +12,7 @@ PROJECT(InfiniTAM VERSION 3.0.0 LANGUAGES C CXX)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
+include(CTest)
 
 #################################
 # Specify the CMake module path #
@@ -65,6 +66,10 @@ ADD_SUBDIRECTORY(FernRelocLib)
 ADD_SUBDIRECTORY(ITMLib)
 ADD_SUBDIRECTORY(InputSource)
 ADD_SUBDIRECTORY(Apps)
+
+if(BUILD_TESTING AND INFINITAM_INSTALL_PACKAGE)
+  ADD_SUBDIRECTORY(tests)
+endif()
 
 #######################################
 # Install headers, package and assets #

@@ -56,7 +56,7 @@ function(infinitam_configure_library_target target_name)
   elseif("${target_name}" STREQUAL "FernRelocLib")
     target_link_libraries(${target_name} ORUtils)
   elseif("${target_name}" STREQUAL "ITMLib")
-    target_link_libraries(${target_name} ORUtils MiniSlamGraphLib)
+    target_link_libraries(${target_name} ORUtils MiniSlamGraphLib FernRelocLib)
   elseif("${target_name}" STREQUAL "InputSource")
     target_link_libraries(${target_name} ORUtils ITMLib)
 

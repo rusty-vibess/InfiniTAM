@@ -1,5 +1,30 @@
 # InfiniTAM v3
 
+## Package Export Smoke Test
+
+To verify that the installed CMake package does not omit internal InfiniTAM libraries from exported link interfaces, run:
+
+```sh
+cmake -S /path/to/InfiniTAM -B /tmp/infinitam-package-validate \
+  -DBUILD_TESTING=ON \
+  -DINFINITAM_INSTALL_APPS=OFF \
+  -DINFINITAM_INSTALL_SAMPLE_DATA=OFF \
+  -DWITH_CUDA=OFF \
+  -DWITH_OPENMP=OFF \
+  -DWITH_OPENNI=OFF \
+  -DWITH_FFMPEG=OFF \
+  -DWITH_REALSENSE=OFF \
+  -DWITH_REALSENSE2=OFF \
+  -DWITH_UVC=OFF \
+  -DWITH_LIBROYALE=OFF \
+  -DWITH_PNG=OFF \
+  -DWITH_CSPARSE=OFF
+cmake --build /tmp/infinitam-package-validate --target ORUtils MiniSlamGraphLib FernRelocLib ITMLib InputSource
+ctest --test-dir /tmp/infinitam-package-validate -R infinitam_package_consumer_smoke --output-on-failure
+```
+
+This is a package smoke test, not a full backend/sensor build. It stages an install, checks the exported internal target graph, and verifies that a consumer can link `InfiniTAM::ITMLib` without manually adding `FernRelocLib`.
+
 This is the main branch of the software bundle "InfiniTAM", the current version is actively maintained by:
 
   Victor Adrian Prisacariu <victor@robots.ox.ac.uk>  
