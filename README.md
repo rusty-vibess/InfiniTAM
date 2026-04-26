@@ -25,6 +25,22 @@ ctest --test-dir /tmp/infinitam-package-validate -R infinitam_package_consumer_s
 
 This is a package smoke test, not a full backend/sensor build. It stages an install, checks the exported internal target graph, and verifies that a consumer can link `InfiniTAM::ITMLib` without manually adding `FernRelocLib`.
 
+## Voxel Type / Colour TSDF
+
+The `ITMVoxel` typedef is selected at configure time via `INFINITAM_VOXEL_TYPE`.
+The default is `ITMVoxel_s`, which stores TSDF values without colour information.
+To fuse RGB into the TSDF, configure InfiniTAM with an RGB voxel type such as:
+
+```sh
+cmake -S /path/to/InfiniTAM -B /tmp/infinitam-rgb \
+  -DINFINITAM_VOXEL_TYPE=ITMVoxel_s_rgb
+```
+
+Valid values are `ITMVoxel_s`, `ITMVoxel_f`, `ITMVoxel_s_rgb` and `ITMVoxel_f_rgb`.
+Changing the voxel type changes the voxel layout, so rebuild InfiniTAM and any
+templated consumers after switching it, and do not reuse saved volumes produced
+with a different voxel type.
+
 This is the main branch of the software bundle "InfiniTAM", the current version is actively maintained by:
 
   Victor Adrian Prisacariu <victor@robots.ox.ac.uk>  

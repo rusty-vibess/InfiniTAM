@@ -29,6 +29,23 @@ OPTION(INFINITAM_INSTALL_SAMPLE_DATA "Install bundled InfiniTAM sample data?" ON
 OPTION(INFINITAM_BUNDLE_PRIVATE_DEPS "Install explicitly project-owned private dependency roots?" ON)
 OPTION(INFINITAM_BUNDLE_PLATFORM_DEPS "Bundle platform/runtime dependencies. This is intentionally off by default." OFF)
 SET(INFINITAM_PRIVATE_DEP_ROOTS "" CACHE STRING "Semicolon-separated install roots for project-owned private runtime dependencies")
+SET(INFINITAM_VOXEL_TYPE "ITMVoxel_s" CACHE STRING "Voxel type used for the public ITMVoxel typedef")
+set_property(CACHE INFINITAM_VOXEL_TYPE PROPERTY STRINGS ITMVoxel_s ITMVoxel_f ITMVoxel_s_rgb ITMVoxel_f_rgb)
+
+set(_infinitam_valid_voxel_types ITMVoxel_s ITMVoxel_f ITMVoxel_s_rgb ITMVoxel_f_rgb)
+list(FIND _infinitam_valid_voxel_types "${INFINITAM_VOXEL_TYPE}" _infinitam_voxel_type_index)
+if(_infinitam_voxel_type_index EQUAL -1)
+  message(FATAL_ERROR
+    "INFINITAM_VOXEL_TYPE must be one of: ${_infinitam_valid_voxel_types}. "
+    "Got: ${INFINITAM_VOXEL_TYPE}"
+  )
+endif()
+
+if(INFINITAM_VOXEL_TYPE MATCHES "_rgb$")
+  set(INFINITAM_VOXEL_HAS_COLOR 1)
+else()
+  set(INFINITAM_VOXEL_HAS_COLOR 0)
+endif()
 
 if(INFINITAM_PRIVATE_DEP_ROOTS)
   list(APPEND CMAKE_PREFIX_PATH ${INFINITAM_PRIVATE_DEP_ROOTS})

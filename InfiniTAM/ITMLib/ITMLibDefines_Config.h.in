@@ -1,0 +1,7 @@
+// Copyright 2014-2017 Oxford University Innovation Limited and the authors of InfiniTAM
+
+#pragma once
+
+#define INFINITAM_VOXEL_TYPE @INFINITAM_VOXEL_TYPE@
+#define INFINITAM_VOXEL_TYPE_NAME "@INFINITAM_VOXEL_TYPE@"
+#define INFINITAM_VOXEL_HAS_COLOR @INFINITAM_VOXEL_HAS_COLOR@

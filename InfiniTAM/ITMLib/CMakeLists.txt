@@ -8,6 +8,12 @@
 
 SET(targetname ITMLib)
 
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/ITMLibDefines_Config.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/ITMLibDefines_Config.h
+  @ONLY
+)
+
 ################################
 # Specify the libraries to use #
 ################################
@@ -30,6 +36,7 @@ CUDAInstantiations.cu
 
 SET(ITMLIB_TOPLEVEL_HEADERS
 ITMLibDefines.h
+${CMAKE_CURRENT_BINARY_DIR}/ITMLibDefines_Config.h
 )
 
 ##
@@ -606,3 +613,10 @@ SOURCE_GROUP(Utils FILES ${ITMLIB_UTILS_SOURCES} ${ITMLIB_UTILS_HEADERS})
 ##########################################
 
 INCLUDE(${PROJECT_SOURCE_DIR}/cmake/SetCUDALibTarget.cmake)
+
+if(INFINITAM_INSTALL_PACKAGE)
+  install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/ITMLibDefines_Config.h
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/InfiniTAM/ITMLib
+  )
+endif()

@@ -4,6 +4,7 @@ function(infinitam_configure_common_target target_name)
   endif()
 
   target_include_directories(${target_name} PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/ITMLib>
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/InfiniTAM>
   )

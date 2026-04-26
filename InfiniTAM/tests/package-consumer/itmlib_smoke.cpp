@@ -7,6 +7,9 @@
 #include "ITMLib/Engines/Visualisation/ITMMultiVisualisationEngineFactory.h"
 #include "ITMLib/Engines/Visualisation/ITMVisualisationEngineFactory.h"
 
+static_assert(ITMVoxel::hasColorInformation == static_cast<bool>(INFINITAM_VOXEL_HAS_COLOR),
+              "Configured voxel color support does not match the exported package metadata.");
+
 int main()
 {
   typedef ITMLib::ITMBasicEngine<ITMVoxel, ITMVoxelIndex> EngineType;

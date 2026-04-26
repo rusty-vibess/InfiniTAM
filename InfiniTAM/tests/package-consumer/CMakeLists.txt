@@ -7,6 +7,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(InfiniTAM REQUIRED CONFIG)
 
+if(NOT DEFINED InfiniTAM_VOXEL_TYPE)
+  message(FATAL_ERROR "Package metadata is missing InfiniTAM_VOXEL_TYPE")
+endif()
+if(NOT DEFINED InfiniTAM_VOXEL_HAS_COLOR)
+  message(FATAL_ERROR "Package metadata is missing InfiniTAM_VOXEL_HAS_COLOR")
+endif()
+
 function(assert_imported_target target_name)
   if(NOT TARGET ${target_name})
     message(FATAL_ERROR "Missing imported target: ${target_name}")
