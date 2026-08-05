@@ -2,15 +2,54 @@
 # Top-level CMakeLists.txt for InfiniTAM #
 ##########################################
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.16)
 
-PROJECT(InfiniTAM)
+if(POLICY CMP0146)
+  cmake_policy(SET CMP0146 OLD)
+endif()
+
+PROJECT(InfiniTAM VERSION 3.0.0 LANGUAGES C CXX)
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+include(CTest)
 
 #################################
 # Specify the CMake module path #
 #################################
 
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/InfiniTAMDependencies.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/InfiniTAMInstallHelpers.cmake)
+
+OPTION(INFINITAM_INSTALL_PACKAGE "Install InfiniTAM libraries, headers and CMake package files?" ON)
+OPTION(INFINITAM_INSTALL_APPS "Install the InfiniTAM sample applications?" ON)
+OPTION(INFINITAM_INSTALL_SAMPLE_DATA "Install bundled InfiniTAM sample data?" ON)
+OPTION(INFINITAM_BUNDLE_PRIVATE_DEPS "Install explicitly project-owned private dependency roots?" ON)
+OPTION(INFINITAM_BUNDLE_PLATFORM_DEPS "Bundle platform/runtime dependencies. This is intentionally off by default." OFF)
+SET(INFINITAM_PRIVATE_DEP_ROOTS "" CACHE STRING "Semicolon-separated install roots for project-owned private runtime dependencies")
+SET(INFINITAM_VOXEL_TYPE "ITMVoxel_s" CACHE STRING "Voxel type used for the public ITMVoxel typedef")
+set_property(CACHE INFINITAM_VOXEL_TYPE PROPERTY STRINGS ITMVoxel_s ITMVoxel_f ITMVoxel_s_rgb ITMVoxel_f_rgb)
+
+set(_infinitam_valid_voxel_types ITMVoxel_s ITMVoxel_f ITMVoxel_s_rgb ITMVoxel_f_rgb)
+list(FIND _infinitam_valid_voxel_types "${INFINITAM_VOXEL_TYPE}" _infinitam_voxel_type_index)
+if(_infinitam_voxel_type_index EQUAL -1)
+  message(FATAL_ERROR
+    "INFINITAM_VOXEL_TYPE must be one of: ${_infinitam_valid_voxel_types}. "
+    "Got: ${INFINITAM_VOXEL_TYPE}"
+  )
+endif()
+
+if(INFINITAM_VOXEL_TYPE MATCHES "_rgb$")
+  set(INFINITAM_VOXEL_HAS_COLOR 1)
+else()
+  set(INFINITAM_VOXEL_HAS_COLOR 0)
+endif()
+
+if(INFINITAM_PRIVATE_DEP_ROOTS)
+  list(APPEND CMAKE_PREFIX_PATH ${INFINITAM_PRIVATE_DEP_ROOTS})
+endif()
 
 #################################
 # Add additional compiler flags #
@@ -38,9 +77,94 @@ ENDIF()
 # Add subdirectories #
 ######################
 
-ADD_SUBDIRECTORY(Apps)
-ADD_SUBDIRECTORY(FernRelocLib)
-ADD_SUBDIRECTORY(InputSource)
-ADD_SUBDIRECTORY(ITMLib)
-ADD_SUBDIRECTORY(MiniSlamGraphLib)
 ADD_SUBDIRECTORY(ORUtils)
+ADD_SUBDIRECTORY(MiniSlamGraphLib)
+ADD_SUBDIRECTORY(FernRelocLib)
+ADD_SUBDIRECTORY(ITMLib)
+ADD_SUBDIRECTORY(InputSource)
+ADD_SUBDIRECTORY(Apps)
+
+if(BUILD_TESTING AND INFINITAM_INSTALL_PACKAGE)
+  ADD_SUBDIRECTORY(tests)
+endif()
+
+#######################################
+# Install headers, package and assets #
+#######################################
+
+if(INFINITAM_INSTALL_PACKAGE)
+  install(DIRECTORY
+    ORUtils
+    MiniSlamGraphLib
+    FernRelocLib
+    ITMLib
+    InputSource
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/InfiniTAM
+    FILES_MATCHING
+      PATTERN "*.h"
+      PATTERN "*.tpp"
+      PATTERN "*.tcu"
+  )
+
+  install(EXPORT InfiniTAMTargets
+    NAMESPACE InfiniTAM::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/InfiniTAM
+  )
+
+  configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/InfiniTAMConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/InfiniTAMConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/InfiniTAM
+  )
+
+  write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/InfiniTAMConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+  )
+
+  configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/InfiniTAMOptions.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/InfiniTAMOptions.cmake
+    @ONLY
+  )
+
+  install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/InfiniTAMConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/InfiniTAMConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/InfiniTAMOptions.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/InfiniTAM
+  )
+
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmake/
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/InfiniTAM/modules
+    FILES_MATCHING PATTERN "Find*.cmake"
+  )
+endif()
+
+if(INFINITAM_INSTALL_SAMPLE_DATA)
+  install(DIRECTORY Files/
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/InfiniTAM/Files
+  )
+endif()
+
+if(INFINITAM_BUNDLE_PRIVATE_DEPS AND INFINITAM_PRIVATE_DEP_ROOTS)
+  foreach(private_dep_root ${INFINITAM_PRIVATE_DEP_ROOTS})
+    if(EXISTS "${private_dep_root}/lib")
+      install(DIRECTORY "${private_dep_root}/lib/"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/InfiniTAM/private
+        FILES_MATCHING
+          PATTERN "*.so"
+          PATTERN "*.so.*"
+      )
+    endif()
+    if(EXISTS "${private_dep_root}/bin")
+      install(DIRECTORY "${private_dep_root}/bin/"
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
+        FILES_MATCHING
+          PATTERN "*.so"
+          PATTERN "*.so.*"
+      )
+    endif()
+  endforeach()
+endif()

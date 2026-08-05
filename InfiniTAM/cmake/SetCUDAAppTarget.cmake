@@ -13,3 +13,5 @@ ENDIF()
 IF(MSVC_IDE)
   SET_TARGET_PROPERTIES(${targetname} PROPERTIES LINK_FLAGS_DEBUG "/DEBUG")
 ENDIF()
+
+infinitam_configure_app_target(${targetname})

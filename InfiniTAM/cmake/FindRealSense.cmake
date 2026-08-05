@@ -6,7 +6,7 @@
 # also defined, but not for general use are
 #  OpenNI_LIBRARY, where to find the OpenNI library.
 
-SET(REALSENSE_ROOT "/usr/local" CACHE FILEPATH "Root directory of librealsense")
+SET(REALSENSE_ROOT "" CACHE PATH "Root directory of librealsense")
 SET(REALSENSE_LOCALROOT "${PROJECT_SOURCE_DIR}/librealsense" CACHE FILEPATH "Root directory of local librealsense (if built)")
 
 #  FIND_PATH(RealSense_ROOT librealsense.vc12 HINTS "D:/Develop/intel/librealsense")

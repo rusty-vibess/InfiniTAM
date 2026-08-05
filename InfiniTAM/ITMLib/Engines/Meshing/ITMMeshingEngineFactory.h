@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "../../Utils/ITMLibSettings.h"
 #include "CPU/ITMMeshingEngine_CPU.h"
 #ifndef COMPILE_WITHOUT_CUDA
 #include "CUDA/ITMMeshingEngine_CUDA.h"

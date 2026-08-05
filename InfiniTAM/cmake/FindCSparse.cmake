@@ -6,11 +6,11 @@
 # also defined, but not for general use are
 #  CSparse_LIBRARY, where to find the CSparse library.
 
-set(CSparse_ROOT "/usr" CACHE FILEPATH "Root directory of CSparse")
+set(CSparse_ROOT "" CACHE PATH "Root directory of CSparse")
 
-find_library(CSparse_LIBRARY NAMES cxsparse csparse PATHS "${CSparse_ROOT}/Lib" "C:/Program Files (x86)/CSparse/Lib" "C:/Program Files/CSparse/Lib" "${CSparse_ROOT}/Bin/x64-Release/" ${CMAKE_LIB_PATH})
+find_library(CSparse_LIBRARY NAMES cxsparse csparse HINTS "${CSparse_ROOT}/Lib" "${CSparse_ROOT}/lib" "${CSparse_ROOT}/Bin/x64-Release/" ${CMAKE_LIB_PATH})
 
-find_path(CSparse_INCLUDE_DIR cs.h PATH "${CSparse_ROOT}/include/suitesparse" "${CSparse_ROOT}/include")
+find_path(CSparse_INCLUDE_DIR cs.h HINTS "${CSparse_ROOT}/include/suitesparse" "${CSparse_ROOT}/include")
 
 find_package_handle_standard_args(CSparse DEFAULT_MSG CSparse_LIBRARY CSparse_INCLUDE_DIR)
 
@@ -19,4 +19,3 @@ if(CSPARSE_FOUND)
 endif()
 
 mark_as_advanced(CSparse_LIBRARY CSparse_INCLUDE_DIR)
-

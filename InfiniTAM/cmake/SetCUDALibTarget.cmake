@@ -9,3 +9,5 @@ IF(WITH_CUDA)
 ELSE()
   ADD_LIBRARY(${targetname} STATIC ${sources} ${headers} ${templates})
 ENDIF()
+
+infinitam_configure_library_target(${targetname})
